@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Clock } from 'lucide-react';
 import { Conversation } from '@/types/debate';
+import { NewDebateForm } from './NewDebateForm';
 
 interface ConversationsListProps {
   onSelectConversation: (conversation: Conversation) => void;
@@ -12,35 +13,47 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchConversations = async () => {
-      try {
-        const response = await fetch('https://debate-bot-vh9a.onrender.com/conversations');
-        if (!response.ok) {
-          throw new Error('Failed to fetch conversations');
-        }
-        const data = await response.json();
-        
-        // Transform API response to match Conversation interface
-        const transformedConversations = data.map((conv: any) => ({
-          id: conv.conversation_id,
-          topic: conv.topic,
-          created_at: conv.created_at,
-          message_count: conv.message_count || 0,
-          last_activity: conv.last_activity || conv.created_at,
-          side: conv.side
-        }));
-        
-        setConversations(transformedConversations);
-      } catch (error) {
-        console.error('Failed to fetch conversations:', error);
-      } finally {
-        setLoading(false);
+  const fetchConversations = async () => {
+    try {
+      const response = await fetch('https://debate-bot-vh9a.onrender.com/conversations');
+      if (!response.ok) {
+        throw new Error('Failed to fetch conversations');
       }
-    };
+      const data = await response.json();
+      
+      // Transform API response to match Conversation interface
+      const transformedConversations = data.map((conv: any) => ({
+        id: conv.conversation_id,
+        topic: conv.topic,
+        created_at: conv.created_at,
+        message_count: conv.message_count || 0,
+        last_activity: conv.last_activity || conv.created_at,
+        side: conv.side
+      }));
+      
+      setConversations(transformedConversations);
+    } catch (error) {
+      console.error('Failed to fetch conversations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchConversations();
   }, []);
+
+  const handleNewDebate = async (topic: string, side: 'pro' | 'con') => {
+    try {
+      // TODO: Replace with actual API endpoint for creating new debates
+      console.log('Creating new debate:', { topic, side });
+      
+      // For now, refresh the conversations list
+      await fetchConversations();
+    } catch (error) {
+      console.error('Failed to create new debate:', error);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -72,6 +85,8 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
         </div>
 
         <div className="grid gap-4">
+          <NewDebateForm onSubmit={handleNewDebate} />
+          
           {conversations.map((conversation) => (
             <Card
               key={conversation.id}
