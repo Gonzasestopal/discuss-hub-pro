@@ -1,13 +1,30 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { ConversationsList } from '@/components/ConversationsList';
+import { ConversationDetail } from '@/components/ConversationDetail';
+import { Conversation } from '@/types/debate';
 
 const Index = () => {
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+
+  const handleSelectConversation = (conversation: Conversation) => {
+    setSelectedConversation(conversation);
+  };
+
+  const handleBackToList = () => {
+    setSelectedConversation(null);
+  };
+
+  if (selectedConversation) {
+    return (
+      <ConversationDetail
+        conversation={selectedConversation}
+        onBack={handleBackToList}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <ConversationsList onSelectConversation={handleSelectConversation} />
   );
 };
 

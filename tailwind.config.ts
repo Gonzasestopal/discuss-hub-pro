@@ -52,6 +52,20 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				pro: {
+					DEFAULT: 'hsl(var(--pro))',
+					foreground: 'hsl(var(--pro-foreground))',
+					muted: 'hsl(var(--pro-muted))'
+				},
+				con: {
+					DEFAULT: 'hsl(var(--con))',
+					foreground: 'hsl(var(--con-foreground))',
+					muted: 'hsl(var(--con-muted))'
+				},
+				neutral: {
+					DEFAULT: 'hsl(var(--neutral))',
+					foreground: 'hsl(var(--neutral-foreground))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
