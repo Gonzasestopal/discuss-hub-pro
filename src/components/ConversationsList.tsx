@@ -45,11 +45,35 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
 
   const handleNewDebate = async (topic: string, side: 'pro' | 'con') => {
     try {
-      // TODO: Replace with actual API endpoint for creating new debates
-      console.log('Creating new debate:', { topic, side });
+      const payload = {
+        message: `topic: ${topic} side:${side}`
+      };
+
+      const response = await fetch('https://debate-bot-vh9a.onrender.com/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create new debate');
+      }
+
+      const data = await response.json();
       
-      // For now, refresh the conversations list
-      await fetchConversations();
+      // Add the new conversation to the list
+      const newConversation: Conversation = {
+        id: data.conversation_id,
+        topic: topic,
+        created_at: new Date().toISOString(),
+        message_count: data.message?.length || 0,
+        last_activity: new Date().toISOString(),
+        side: side
+      };
+
+      setConversations(prev => [newConversation, ...prev]);
     } catch (error) {
       console.error('Failed to create new debate:', error);
     }
