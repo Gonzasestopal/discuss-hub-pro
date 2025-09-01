@@ -10,32 +10,6 @@ interface ConversationDetailProps {
   onBack: () => void;
 }
 
-// Mock messages - replace with actual API call
-const mockMessages: Record<number, Message[]> = {
-  1: [
-    {
-      id: 1,
-      content: "Dogs have been loyal companions to humans for thousands of years. Their unconditional love and protective nature make them irreplaceable friends.",
-      side: 'pro',
-      timestamp: "2024-01-15T10:35:00Z",
-      conversation_id: 1
-    },
-    {
-      id: 2,
-      content: "While dogs can be great pets, calling them 'best friends' is an overstatement. Human relationships offer emotional depth and intellectual connection that animals simply cannot provide.",
-      side: 'con',
-      timestamp: "2024-01-15T11:20:00Z",
-      conversation_id: 1
-    },
-    {
-      id: 3,
-      content: "But dogs provide emotional support without judgment. They've been scientifically proven to reduce stress, anxiety, and depression. Their presence alone can be therapeutic.",
-      side: 'pro',
-      timestamp: "2024-01-15T12:10:00Z",
-      conversation_id: 1
-    }
-  ]
-};
 
 export const ConversationDetail = ({ conversation, onBack }: ConversationDetailProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -49,9 +23,12 @@ export const ConversationDetail = ({ conversation, onBack }: ConversationDetailP
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setMessages(mockMessages[conversation.id] || []);
+        const response = await fetch(`https://debate-bot-vh9a.onrender.com/conversations/${conversation.id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch messages');
+        }
+        const data = await response.json();
+        setMessages(data);
       } catch (error) {
         console.error('Failed to fetch messages:', error);
       } finally {
