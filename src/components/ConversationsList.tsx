@@ -45,7 +45,17 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
           throw new Error('Failed to fetch conversations');
         }
         const data = await response.json();
-        setConversations(data);
+        
+        // Transform API response to match Conversation interface
+        const transformedConversations = data.map((conv: any) => ({
+          id: conv.conversation_id,
+          topic: conv.topic,
+          created_at: conv.created_at,
+          message_count: conv.message_count || 0,
+          last_activity: conv.last_activity || conv.created_at
+        }));
+        
+        setConversations(transformedConversations);
       } catch (error) {
         console.error('Failed to fetch conversations:', error);
       } finally {
