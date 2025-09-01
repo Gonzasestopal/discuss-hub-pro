@@ -38,12 +38,14 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Replace with actual API call
     const fetchConversations = async () => {
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-        setConversations(mockConversations);
+        const response = await fetch('https://debate-bot-vh9a.onrender.com/conversations');
+        if (!response.ok) {
+          throw new Error('Failed to fetch conversations');
+        }
+        const data = await response.json();
+        setConversations(data);
       } catch (error) {
         console.error('Failed to fetch conversations:', error);
       } finally {
