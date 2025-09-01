@@ -33,7 +33,9 @@ export const ConversationDetail = ({ conversation, onBack }: ConversationDetailP
         const transformedMessages: Message[] = data.message.map((apiMessage, index) => ({
           id: index + 1,
           content: apiMessage.message,
-          side: apiMessage.role === 'user' ? data.side : (data.side === 'pro' ? 'con' : 'pro'),
+          side: data.side 
+            ? (apiMessage.role === 'bot' ? data.side : (data.side === 'pro' ? 'con' : 'pro'))
+            : (apiMessage.role === 'bot' ? 'pro' : 'con'), // Default if no side specified
           timestamp: data.created_at, // Using conversation created_at for now
           conversation_id: data.conversation_id
         }));
@@ -78,7 +80,9 @@ export const ConversationDetail = ({ conversation, onBack }: ConversationDetailP
       const transformedMessages: Message[] = data.message.map((apiMessage, index) => ({
         id: index + 1,
         content: apiMessage.message,
-        side: apiMessage.role === 'user' ? side : (side === 'pro' ? 'con' : 'pro'),
+        side: data.side 
+          ? (apiMessage.role === 'bot' ? data.side : (data.side === 'pro' ? 'con' : 'pro'))
+          : (apiMessage.role === 'bot' ? 'pro' : 'con'), // Default if no side specified
         timestamp: new Date().toISOString(),
         conversation_id: data.conversation_id
       }));

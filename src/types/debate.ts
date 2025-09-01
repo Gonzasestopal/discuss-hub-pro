@@ -23,7 +23,7 @@ export interface ApiMessage {
 export interface ConversationDetailResponse {
   conversation_id: number;
   message: ApiMessage[];
-  side: 'pro' | 'con';
+  side: 'pro' | 'con' | null;
   topic: string;
   created_at: string;
   last_activity: string | null;
