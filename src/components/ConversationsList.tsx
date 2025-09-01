@@ -8,31 +8,6 @@ interface ConversationsListProps {
   onSelectConversation: (conversation: Conversation) => void;
 }
 
-// Mock data - replace with actual API call
-const mockConversations: Conversation[] = [
-  {
-    id: 1,
-    topic: "Dogs are human's best friends",
-    created_at: "2024-01-15T10:30:00Z",
-    message_count: 12,
-    last_activity: "2024-01-15T14:45:00Z"
-  },
-  {
-    id: 2,
-    topic: "Remote work is more productive than office work",
-    created_at: "2024-01-14T09:15:00Z",
-    message_count: 8,
-    last_activity: "2024-01-14T16:20:00Z"
-  },
-  {
-    id: 3,
-    topic: "Social media has improved human connection",
-    created_at: "2024-01-13T11:00:00Z",
-    message_count: 15,
-    last_activity: "2024-01-13T18:30:00Z"
-  }
-];
-
 export const ConversationsList = ({ onSelectConversation }: ConversationsListProps) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +27,8 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
           topic: conv.topic,
           created_at: conv.created_at,
           message_count: conv.message_count || 0,
-          last_activity: conv.last_activity || conv.created_at
+          last_activity: conv.last_activity || conv.created_at,
+          side: conv.side
         }));
         
         setConversations(transformedConversations);
@@ -99,18 +75,47 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
           {conversations.map((conversation) => (
             <Card
               key={conversation.id}
-              className="gradient-card border-border hover:shadow-debate transition-all duration-300 cursor-pointer animate-slide-up"
+              className={`border-border hover:shadow-debate transition-all duration-300 cursor-pointer animate-slide-up ${
+                conversation.side === 'pro' 
+                  ? 'bg-pro-muted border-pro hover:bg-pro-muted/80' 
+                  : conversation.side === 'con'
+                  ? 'bg-con-muted border-con hover:bg-con-muted/80'
+                  : 'gradient-card'
+              }`}
               onClick={() => onSelectConversation(conversation)}
             >
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-foreground line-clamp-2">
+                  <h3 className={`text-xl font-semibold line-clamp-2 ${
+                    conversation.side === 'pro' 
+                      ? 'text-pro-foreground' 
+                      : conversation.side === 'con'
+                      ? 'text-con-foreground'
+                      : 'text-foreground'
+                  }`}>
                     {conversation.topic}
                   </h3>
-                  <MessageCircle className="text-primary w-6 h-6 flex-shrink-0 ml-4" />
+                  <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+                    {conversation.side && (
+                      <span className={`text-xs font-medium uppercase tracking-wide px-2 py-1 rounded-full ${
+                        conversation.side === 'pro' 
+                          ? 'bg-pro text-pro-foreground' 
+                          : 'bg-con text-con-foreground'
+                      }`}>
+                        {conversation.side}
+                      </span>
+                    )}
+                    <MessageCircle className="text-primary w-6 h-6" />
+                  </div>
                 </div>
                 
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <div className={`flex items-center justify-between text-sm ${
+                  conversation.side === 'pro' 
+                    ? 'text-pro-foreground/70' 
+                    : conversation.side === 'con'
+                    ? 'text-con-foreground/70'
+                    : 'text-muted-foreground'
+                }`}>
                   <div className="flex items-center gap-4">
                     <span className="flex items-center gap-1">
                       <MessageCircle className="w-4 h-4" />

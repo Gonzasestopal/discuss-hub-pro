@@ -12,6 +12,7 @@ export interface Conversation {
   created_at: string;
   message_count: number;
   last_activity: string;
+  side: 'pro' | 'con' | null;
 }
 
 export interface ApiMessage {
