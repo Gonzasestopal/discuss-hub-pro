@@ -1,8 +1,10 @@
 # Welcome to your Lovable project
 
+![Demo](public/sample.png)
+
 ## Project info
 
-**URL**: https://lovable.dev/projects/4751d08b-09f6-48df-8334-3b498db6ed4c
+**URL**: https://discuss-hub-pro.lovable.app/
 
 ## How can I edit this code?
 
