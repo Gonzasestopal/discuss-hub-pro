@@ -14,6 +14,21 @@ export interface Conversation {
   last_activity: string;
 }
 
+export interface ApiMessage {
+  role: 'user' | 'bot';
+  message: string;
+}
+
+export interface ConversationDetailResponse {
+  conversation_id: number;
+  message: ApiMessage[];
+  side: 'pro' | 'con';
+  topic: string;
+  created_at: string;
+  last_activity: string | null;
+  message_count: number | null;
+}
+
 export interface ApiPayload {
   message: string;
   conversation_id: number;

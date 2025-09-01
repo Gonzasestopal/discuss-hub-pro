@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, MessageCircle } from 'lucide-react';
-import { Message, Conversation } from '@/types/debate';
+import { Message, Conversation, ConversationDetailResponse } from '@/types/debate';
 import { MessageForm } from './MessageForm';
 
 interface ConversationDetailProps {
@@ -27,8 +27,18 @@ export const ConversationDetail = ({ conversation, onBack }: ConversationDetailP
         if (!response.ok) {
           throw new Error('Failed to fetch messages');
         }
-        const data = await response.json();
-        setMessages(data);
+        const data: ConversationDetailResponse = await response.json();
+        
+        // Transform API response to UI format
+        const transformedMessages: Message[] = data.message.map((apiMessage, index) => ({
+          id: index + 1,
+          content: apiMessage.message,
+          side: apiMessage.role === 'user' ? data.side : (data.side === 'pro' ? 'con' : 'pro'),
+          timestamp: data.created_at, // Using conversation created_at for now
+          conversation_id: data.conversation_id
+        }));
+        
+        setMessages(transformedMessages);
       } catch (error) {
         console.error('Failed to fetch messages:', error);
       } finally {
