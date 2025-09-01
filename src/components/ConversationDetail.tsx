@@ -55,7 +55,7 @@ export const ConversationDetail = ({ conversation, onBack }: ConversationDetailP
     scrollToBottom();
   }, [messages]);
 
-  const handleNewMessage = async (content: string, side: 'pro' | 'con') => {
+  const handleNewMessage = async (content: string) => {
     const payload = {
       message: content,
       conversation_id: conversation.id
