@@ -45,9 +45,8 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
 
   const handleNewDebate = async (topic: string, side: 'pro' | 'con') => {
     try {
-      const botSide: 'pro' | 'con' = side === 'pro' ? 'con' : 'pro';
       const payload = {
-        message: `topic: ${topic} side:${botSide}`
+        message: `topic: ${topic} side:${side}`
       };
 
       const response = await fetch('https://debate-bot-vh9a.onrender.com/messages', {
@@ -67,11 +66,11 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
       // Add the new conversation to the list
       const newConversation: Conversation = {
         id: data.conversation_id,
-        topic: data.topic ?? topic,
-        created_at: data.created_at ?? new Date().toISOString(),
+        topic: topic,
+        created_at: new Date().toISOString(),
         message_count: data.message?.length || 0,
-        last_activity: data.last_activity ?? new Date().toISOString(),
-        side: data.side ?? botSide
+        last_activity: new Date().toISOString(),
+        side: side
       };
 
       setConversations(prev => [newConversation, ...prev]);
