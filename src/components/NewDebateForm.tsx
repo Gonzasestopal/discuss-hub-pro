@@ -40,7 +40,7 @@ export const NewDebateForm = ({ onSubmit }: NewDebateFormProps) => {
         <div className="p-6 text-center">
           <Plus className="w-12 h-12 text-primary mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-foreground mb-2">Start New Debate</h3>
-          <p className="text-muted-foreground">Choose your side and present your argument</p>
+          <p className="text-muted-foreground">Choose the bot's stance and present your counter-argument</p>
         </div>
       </Card>
     );
@@ -58,7 +58,7 @@ export const NewDebateForm = ({ onSubmit }: NewDebateFormProps) => {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Side Selection */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Choose your side:</label>
+          <label className="text-sm font-medium text-foreground">Choose the bot's stance:</label>
           <div className="flex gap-2">
             <Button
               type="button"
@@ -68,7 +68,7 @@ export const NewDebateForm = ({ onSubmit }: NewDebateFormProps) => {
               className={selectedSide === 'pro' ? 'bg-pro hover:bg-pro/90 text-pro-foreground' : 'border-pro text-pro hover:bg-pro/10'}
             >
               <ThumbsUp className="w-4 h-4 mr-2" />
-              Pro
+              Bot Pro
             </Button>
             <Button
               type="button"
@@ -78,7 +78,7 @@ export const NewDebateForm = ({ onSubmit }: NewDebateFormProps) => {
               className={selectedSide === 'con' ? 'bg-con hover:bg-con/90 text-con-foreground' : 'border-con text-con hover:bg-con/10'}
             >
               <ThumbsDown className="w-4 h-4 mr-2" />
-              Con
+              Bot Con
             </Button>
           </div>
         </div>
@@ -89,8 +89,8 @@ export const NewDebateForm = ({ onSubmit }: NewDebateFormProps) => {
           <Textarea
             placeholder={
               selectedSide
-                ? `Enter the topic you want to ${selectedSide === 'pro' ? 'support' : 'oppose'}...`
-                : "Select your side first, then enter the debate topic..."
+                ? `Enter the topic the bot will ${selectedSide === 'pro' ? 'support' : 'oppose'} (you'll argue the opposite)...`
+                : "Select the bot's stance first, then enter the debate topic..."
             }
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
@@ -120,9 +120,9 @@ export const NewDebateForm = ({ onSubmit }: NewDebateFormProps) => {
         {selectedSide && (
           <div className="text-xs text-muted-foreground bg-muted/30 rounded-lg p-3 animate-fade-in">
             <p className="font-medium mb-1">
-              {selectedSide === 'pro' ? '✅ Supporting' : '❌ Opposing'} this topic
+              Bot will be {selectedSide === 'pro' ? '✅ Supporting' : '❌ Opposing'} this topic
             </p>
-            <p>Present a clear, debatable statement. Others will take the opposing view.</p>
+            <p>You'll argue the opposite side. Present a clear, debatable statement.</p>
           </div>
         )}
       </form>
