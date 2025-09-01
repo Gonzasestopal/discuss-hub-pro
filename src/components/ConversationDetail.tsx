@@ -55,24 +55,35 @@ export const ConversationDetail = ({ conversation, onBack }: ConversationDetailP
 
   const handleNewMessage = async (content: string, side: 'pro' | 'con') => {
     const payload = {
-      message: `topic: ${conversation.topic} side: ${side} content: ${content}`,
+      message: content,
       conversation_id: conversation.id
     };
 
     try {
-      // Replace with actual API call
-      console.log('Sending payload:', payload);
-      
-      // Mock response - add the new message to the list
-      const newMessage: Message = {
-        id: messages.length + 1,
-        content,
-        side,
+      const response = await fetch('https://debate-bot-vh9a.onrender.com/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      const data: ConversationDetailResponse = await response.json();
+
+      // Transform API response to UI format
+      const transformedMessages: Message[] = data.message.map((apiMessage, index) => ({
+        id: index + 1,
+        content: apiMessage.message,
+        side: apiMessage.role === 'user' ? side : (side === 'pro' ? 'con' : 'pro'),
         timestamp: new Date().toISOString(),
-        conversation_id: conversation.id
-      };
-      
-      setMessages(prev => [...prev, newMessage]);
+        conversation_id: data.conversation_id
+      }));
+
+      setMessages(transformedMessages);
     } catch (error) {
       console.error('Failed to send message:', error);
     }
