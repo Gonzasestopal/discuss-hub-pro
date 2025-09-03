@@ -1,3 +1,4 @@
+# .github/workflows/development.yml
 name: Development Workflow
 
 on:
@@ -6,7 +7,6 @@ on:
     branches: [master, main]
 
 jobs:
-  # ---- Quality: ESLint + Prettier (and optional typecheck/build)
   quality:
     runs-on: ubuntu-latest
     steps:
@@ -18,15 +18,33 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
-      - name: Enable Corepack
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.10.0
+          run_install: false
+
+      - name: Versions
         run: |
-          corepack enable
-          corepack install
           node -v
           pnpm -v
 
-      - name: Install dependencies
+      - name: Install deps
         run: pnpm install --frozen-lockfile
 
       - name: ESLint
         run: pnpm lint
+
+      - name: Prettier (check)
+        run: pnpm format:check
+
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Commitlint
+        uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: .commitlintrc.cjs
