@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
 import { Send } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 
 interface MessageFormProps {
   onSubmit: (content: string) => void;
@@ -14,11 +15,11 @@ export const MessageForm = ({ onSubmit }: MessageFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!content.trim()) return;
 
     setIsSubmitting(true);
-    
+
     try {
       await onSubmit(content.trim());
       setContent('');
@@ -41,9 +42,7 @@ export const MessageForm = ({ onSubmit }: MessageFormProps) => {
             className="min-h-[100px] resize-none bg-background border-border focus:border-primary"
           />
           <div className="flex justify-between items-center">
-            <span className="text-xs text-muted-foreground">
-              {content.length}/500 characters
-            </span>
+            <span className="text-xs text-muted-foreground">{content.length}/500 characters</span>
             <Button
               type="submit"
               disabled={!content.trim() || isSubmitting || content.length > 500}
@@ -62,7 +61,9 @@ export const MessageForm = ({ onSubmit }: MessageFormProps) => {
         {/* Guidelines */}
         <div className="text-xs text-muted-foreground bg-muted/30 rounded-lg p-3">
           <p className="font-medium mb-1">💬 Join the debate</p>
-          <p>Present clear arguments, use evidence when possible, and maintain respectful discourse.</p>
+          <p>
+            Present clear arguments, use evidence when possible, and maintain respectful discourse.
+          </p>
         </div>
       </form>
     </Card>

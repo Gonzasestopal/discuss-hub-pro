@@ -40,19 +40,19 @@ All colors MUST be HSL.
     --pro: 142 76% 36%;
     --pro-foreground: 355 7% 97%;
     --pro-muted: 142 30% 25%;
-    
+
     --con: 0 72% 51%;
     --con-foreground: 0 0% 98%;
     --con-muted: 0 30% 25%;
-    
+
     --neutral: 240 5% 64.9%;
     --neutral-foreground: 0 0% 98%;
-    
+
     /* Gradients */
     --gradient-debate: linear-gradient(135deg, hsl(var(--pro)) 0%, hsl(var(--con)) 100%);
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(142 76% 45%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(240 5% 6%) 0%, hsl(240 4% 9%) 100%);
-    
+
     /* Shadows */
     --shadow-debate: 0 8px 32px hsl(var(--primary) / 0.12);
     --shadow-glow: 0 0 20px hsl(var(--primary) / 0.3);
@@ -129,27 +129,27 @@ All colors MUST be HSL.
   .gradient-debate {
     background: var(--gradient-debate);
   }
-  
+
   .gradient-primary {
     background: var(--gradient-primary);
   }
-  
+
   .gradient-card {
     background: var(--gradient-card);
   }
-  
+
   .shadow-debate {
     box-shadow: var(--shadow-debate);
   }
-  
+
   .shadow-glow {
     box-shadow: var(--shadow-glow);
   }
-  
+
   .animate-fade-in {
     animation: fadeIn 0.3s ease-out;
   }
-  
+
   .animate-slide-up {
     animation: slideUp 0.4s ease-out;
   }
