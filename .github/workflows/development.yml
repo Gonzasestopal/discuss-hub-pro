@@ -1,0 +1,32 @@
+name: Development Workflow
+
+on:
+  pull_request:
+  push:
+    branches: [master, main]
+
+jobs:
+  # ---- Quality: ESLint + Prettier (and optional typecheck/build)
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node (from .nvmrc)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack install
+          node -v
+          pnpm -v
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: ESLint
+        run: pnpm lint
