@@ -3,6 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "pnpm@9.10.0",
+  "engines": {
+    "node": "20.11.x"
+  },
+  "volta": {
+    "node": "20.11.1",
+    "pnpm": "9.10.0"
+  },
   "scripts": {
     "dev": "pnpm -s vite",
     "build": "pnpm -s vite build",
@@ -10,7 +18,8 @@
     "lint:fix": "pnpm lint --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "check": "pnpm lint && pnpm format:check",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
