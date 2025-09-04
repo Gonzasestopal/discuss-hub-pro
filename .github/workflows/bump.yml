@@ -9,14 +9,19 @@ env:
   GIT_USER_NAME: gonzasestopal
 
 permissions:
-  contents: write # required to push bump commits & tags
+  contents: write
   pull-requests: write
-  issues: write # optional, for changelog automation
+  issues: write
 
 jobs:
   bump:
     if: "!startsWith(github.event.head_commit.message, 'bump:')"
     runs-on: ubuntu-latest
+
+    # EXponer la versión como output del job
+    outputs:
+      version: ${{ steps.cz.outputs.version }}
+
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -24,23 +29,30 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Fetch tags
+        run: git fetch --tags --force
+
+      # (Opcional) Node no es necesario para Commitizen, pero no estorba
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
 
       - id: cz
-        name: Create bump and changelog
+        name: Commitizen bump & changelog
         uses: commitizen-tools/commitizen-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           git_email: ${{ env.GIT_USER_EMAIL }}
           git_name: ${{ env.GIT_USER_NAME }}
-          no_raise: 21 # prevents workflow from failing if version not detected
+          # Evita fallar si aún no detecta versión, pero deja el output vacío
+          no_raise: 21
 
   release:
     needs: bump
     runs-on: ubuntu-latest
+    # Solo corre si hay versión (output no vacío)
+    if: ${{ needs.bump.outputs.version != '' }}
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -50,9 +62,9 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.cz.outputs.version }}
-          name: Release ${{ steps.cz.outputs.version }}
+          tag_name: v${{ needs.bump.outputs.version }}
+          name: Release ${{ needs.bump.outputs.version }}
           body: |
-            🚀 Version ${{ steps.cz.outputs.version }} released
+            🚀 Version ${{ needs.bump.outputs.version }} released
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

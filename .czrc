@@ -1,5 +1,5 @@
 {
-  "path": "cz_conventional_commits",
+  "path": "cz-conventional-changelog",
   "tag_format": "v$version",
   "version": "0.1.0",
   "changelog_file": "CHANGELOG.md"
