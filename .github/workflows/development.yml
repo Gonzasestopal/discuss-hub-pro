@@ -2,8 +2,7 @@ name: Development Workflow
 
 on:
   pull_request:
-  push:
-    branches: [master, main]
+    branches: [main]
 
 jobs:
   lint:
