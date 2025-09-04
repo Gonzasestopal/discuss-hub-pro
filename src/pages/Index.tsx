@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { ConversationsList } from '@/components/ConversationsList';
+
 import { ConversationDetail } from '@/components/ConversationDetail';
+import { ConversationsList } from '@/components/ConversationsList';
 import { Conversation } from '@/types/debate';
 
 const Index = () => {
@@ -15,17 +16,10 @@ const Index = () => {
   };
 
   if (selectedConversation) {
-    return (
-      <ConversationDetail
-        conversation={selectedConversation}
-        onBack={handleBackToList}
-      />
-    );
+    return <ConversationDetail conversation={selectedConversation} onBack={handleBackToList} />;
   }
 
-  return (
-    <ConversationsList onSelectConversation={handleSelectConversation} />
-  );
+  return <ConversationsList onSelectConversation={handleSelectConversation} />;
 };
 
 export default Index;

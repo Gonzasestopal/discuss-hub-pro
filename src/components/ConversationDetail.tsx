@@ -1,8 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowLeft, MessageCircle } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, MessageCircle } from 'lucide-react';
-import { Message, Conversation, ConversationDetailResponse } from '@/types/debate';
+import { Conversation, ConversationDetailResponse, Message } from '@/types/debate';
+
 import { MessageForm } from './MessageForm';
 
 interface ConversationDetailProps {
@@ -10,36 +12,43 @@ interface ConversationDetailProps {
   onBack: () => void;
 }
 
-
 export const ConversationDetail = ({ conversation, onBack }: ConversationDetailProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`https://debate-bot-vh9a.onrender.com/conversations/${conversation.id}`);
+        const response = await fetch(
+          `https://debate-bot-vh9a.onrender.com/conversations/${conversation.id}`,
+        );
         if (!response.ok) {
           throw new Error('Failed to fetch messages');
         }
         const data: ConversationDetailResponse = await response.json();
-        
+
         // Transform API response to UI format
         const transformedMessages: Message[] = data.message.map((apiMessage, index) => ({
           id: index + 1,
           content: apiMessage.message,
-          side: data.side 
-            ? (apiMessage.role === 'bot' ? data.side : (data.side === 'pro' ? 'con' : 'pro'))
-            : (apiMessage.role === 'bot' ? 'pro' : 'con'), // Default if no side specified
+          side: data.side
+            ? apiMessage.role === 'bot'
+              ? data.side
+              : data.side === 'pro'
+                ? 'con'
+                : 'pro'
+            : apiMessage.role === 'bot'
+              ? 'pro'
+              : 'con', // Default if no side specified
           timestamp: data.created_at, // Using conversation created_at for now
-          conversation_id: data.conversation_id
+          conversation_id: data.conversation_id,
         }));
-        
+
         setMessages(transformedMessages);
       } catch (error) {
         console.error('Failed to fetch messages:', error);
@@ -58,7 +67,7 @@ export const ConversationDetail = ({ conversation, onBack }: ConversationDetailP
   const handleNewMessage = async (content: string) => {
     const payload = {
       message: content,
-      conversation_id: conversation.id
+      conversation_id: conversation.id,
     };
 
     try {
@@ -67,7 +76,7 @@ export const ConversationDetail = ({ conversation, onBack }: ConversationDetailP
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -80,11 +89,17 @@ export const ConversationDetail = ({ conversation, onBack }: ConversationDetailP
       const transformedMessages: Message[] = data.message.map((apiMessage, index) => ({
         id: index + 1,
         content: apiMessage.message,
-        side: data.side 
-          ? (apiMessage.role === 'bot' ? data.side : (data.side === 'pro' ? 'con' : 'pro'))
-          : (apiMessage.role === 'bot' ? 'pro' : 'con'), // Default if no side specified
+        side: data.side
+          ? apiMessage.role === 'bot'
+            ? data.side
+            : data.side === 'pro'
+              ? 'con'
+              : 'pro'
+          : apiMessage.role === 'bot'
+            ? 'pro'
+            : 'con', // Default if no side specified
         timestamp: new Date().toISOString(),
-        conversation_id: data.conversation_id
+        conversation_id: data.conversation_id,
       }));
 
       setMessages(transformedMessages);
@@ -96,7 +111,7 @@ export const ConversationDetail = ({ conversation, onBack }: ConversationDetailP
   const formatTime = (timestamp: string) => {
     return new Date(timestamp).toLocaleTimeString('en-US', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -142,9 +157,11 @@ export const ConversationDetail = ({ conversation, onBack }: ConversationDetailP
                 }`}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`text-xs font-medium uppercase tracking-wide ${
-                    message.side === 'pro' ? 'text-pro' : 'text-con'
-                  }`}>
+                  <span
+                    className={`text-xs font-medium uppercase tracking-wide ${
+                      message.side === 'pro' ? 'text-pro' : 'text-con'
+                    }`}
+                  >
                     {message.side}
                   </span>
                   <span className="text-xs text-muted-foreground">
@@ -171,7 +188,9 @@ export const ConversationDetail = ({ conversation, onBack }: ConversationDetailP
           <div className="text-center">
             <MessageCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">Start the Debate</h3>
-            <p className="text-muted-foreground">Be the first to share your perspective on this topic!</p>
+            <p className="text-muted-foreground">
+              Be the first to share your perspective on this topic!
+            </p>
           </div>
         </div>
       )}

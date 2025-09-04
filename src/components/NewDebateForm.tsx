@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { Plus, ThumbsDown, ThumbsUp } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Plus, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 
 interface NewDebateFormProps {
   onSubmit: (topic: string, side: 'pro' | 'con') => void;
@@ -16,11 +17,11 @@ export const NewDebateForm = ({ onSubmit }: NewDebateFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!topic.trim() || !selectedSide) return;
 
     setIsSubmitting(true);
-    
+
     try {
       await onSubmit(topic.trim(), selectedSide);
       setTopic('');
@@ -35,12 +36,16 @@ export const NewDebateForm = ({ onSubmit }: NewDebateFormProps) => {
 
   if (!showForm) {
     return (
-      <Card className="gradient-card border-border hover:shadow-debate transition-all duration-300 cursor-pointer animate-fade-in" 
-            onClick={() => setShowForm(true)}>
+      <Card
+        className="gradient-card border-border hover:shadow-debate transition-all duration-300 cursor-pointer animate-fade-in"
+        onClick={() => setShowForm(true)}
+      >
         <div className="p-6 text-center">
           <Plus className="w-12 h-12 text-primary mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-foreground mb-2">Start New Debate</h3>
-          <p className="text-muted-foreground">Choose the bot's stance and present your counter-argument</p>
+          <p className="text-muted-foreground">
+            Choose the bot's stance and present your counter-argument
+          </p>
         </div>
       </Card>
     );
@@ -65,7 +70,11 @@ export const NewDebateForm = ({ onSubmit }: NewDebateFormProps) => {
               variant={selectedSide === 'pro' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setSelectedSide('pro')}
-              className={selectedSide === 'pro' ? 'bg-pro hover:bg-pro/90 text-pro-foreground' : 'border-pro text-pro hover:bg-pro/10'}
+              className={
+                selectedSide === 'pro'
+                  ? 'bg-pro hover:bg-pro/90 text-pro-foreground'
+                  : 'border-pro text-pro hover:bg-pro/10'
+              }
             >
               <ThumbsUp className="w-4 h-4 mr-2" />
               Bot Pro
@@ -75,7 +84,11 @@ export const NewDebateForm = ({ onSubmit }: NewDebateFormProps) => {
               variant={selectedSide === 'con' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setSelectedSide('con')}
-              className={selectedSide === 'con' ? 'bg-con hover:bg-con/90 text-con-foreground' : 'border-con text-con hover:bg-con/10'}
+              className={
+                selectedSide === 'con'
+                  ? 'bg-con hover:bg-con/90 text-con-foreground'
+                  : 'border-con text-con hover:bg-con/10'
+              }
             >
               <ThumbsDown className="w-4 h-4 mr-2" />
               Bot Con
@@ -98,9 +111,7 @@ export const NewDebateForm = ({ onSubmit }: NewDebateFormProps) => {
             disabled={!selectedSide}
           />
           <div className="flex justify-between items-center">
-            <span className="text-xs text-muted-foreground">
-              {topic.length}/200 characters
-            </span>
+            <span className="text-xs text-muted-foreground">{topic.length}/200 characters</span>
             <Button
               type="submit"
               disabled={!topic.trim() || !selectedSide || isSubmitting || topic.length > 200}

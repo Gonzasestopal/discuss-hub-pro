@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
+import { useEffect, useState } from 'react';
+import { Clock, MessageCircle } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
-import { MessageCircle, Clock } from 'lucide-react';
-import { Conversation } from '@/types/debate';
+import { Card } from '@/components/ui/card';
+import { Conversation, ConversationDetailResponse } from '@/types/debate';
+
 import { NewDebateForm } from './NewDebateForm';
 
 interface ConversationsListProps {
@@ -20,17 +22,17 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
         throw new Error('Failed to fetch conversations');
       }
       const data = await response.json();
-      
+
       // Transform API response to match Conversation interface
-      const transformedConversations = data.map((conv: any) => ({
+      const transformedConversations = data.map((conv: ConversationDetailResponse) => ({
         id: conv.conversation_id,
         topic: conv.topic,
         created_at: conv.created_at,
         message_count: conv.message_count || 0,
         last_activity: conv.last_activity || conv.created_at,
-        side: conv.side
+        side: conv.side,
       }));
-      
+
       setConversations(transformedConversations);
     } catch (error) {
       console.error('Failed to fetch conversations:', error);
@@ -46,7 +48,7 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
   const handleNewDebate = async (topic: string, side: 'pro' | 'con') => {
     try {
       const payload = {
-        message: `topic: ${topic} side:${side}`
+        message: `topic: ${topic} side:${side}`,
       };
 
       const response = await fetch('https://debate-bot-vh9a.onrender.com/messages', {
@@ -54,7 +56,7 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -62,7 +64,7 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
       }
 
       const data = await response.json();
-      
+
       // Add the new conversation to the list
       const newConversation: Conversation = {
         id: data.conversation_id,
@@ -70,10 +72,10 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
         created_at: new Date().toISOString(),
         message_count: data.message?.length || 0,
         last_activity: new Date().toISOString(),
-        side: side
+        side: side,
       };
 
-      setConversations(prev => [newConversation, ...prev]);
+      setConversations((prev) => [newConversation, ...prev]);
     } catch (error) {
       console.error('Failed to create new debate:', error);
     }
@@ -84,7 +86,7 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -110,51 +112,57 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
 
         <div className="grid gap-4">
           <NewDebateForm onSubmit={handleNewDebate} />
-          
+
           {conversations.map((conversation) => (
             <Card
               key={conversation.id}
               className={`border-border hover:shadow-debate transition-all duration-300 cursor-pointer animate-slide-up ${
-                conversation.side === 'pro' 
-                  ? 'bg-pro-muted border-pro hover:bg-pro-muted/80' 
+                conversation.side === 'pro'
+                  ? 'bg-pro-muted border-pro hover:bg-pro-muted/80'
                   : conversation.side === 'con'
-                  ? 'bg-con-muted border-con hover:bg-con-muted/80'
-                  : 'gradient-card'
+                    ? 'bg-con-muted border-con hover:bg-con-muted/80'
+                    : 'gradient-card'
               }`}
               onClick={() => onSelectConversation(conversation)}
             >
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <h3 className={`text-xl font-semibold line-clamp-2 ${
-                    conversation.side === 'pro' 
-                      ? 'text-pro-foreground' 
-                      : conversation.side === 'con'
-                      ? 'text-con-foreground'
-                      : 'text-foreground'
-                  }`}>
+                  <h3
+                    className={`text-xl font-semibold line-clamp-2 ${
+                      conversation.side === 'pro'
+                        ? 'text-pro-foreground'
+                        : conversation.side === 'con'
+                          ? 'text-con-foreground'
+                          : 'text-foreground'
+                    }`}
+                  >
                     {conversation.topic}
                   </h3>
                   <div className="flex items-center gap-2 flex-shrink-0 ml-4">
                     {conversation.side && (
-                      <span className={`text-xs font-medium uppercase tracking-wide px-2 py-1 rounded-full ${
-                        conversation.side === 'pro' 
-                          ? 'bg-pro text-pro-foreground' 
-                          : 'bg-con text-con-foreground'
-                      }`}>
+                      <span
+                        className={`text-xs font-medium uppercase tracking-wide px-2 py-1 rounded-full ${
+                          conversation.side === 'pro'
+                            ? 'bg-pro text-pro-foreground'
+                            : 'bg-con text-con-foreground'
+                        }`}
+                      >
                         {conversation.side}
                       </span>
                     )}
                     <MessageCircle className="text-primary w-6 h-6" />
                   </div>
                 </div>
-                
-                <div className={`flex items-center justify-between text-sm ${
-                  conversation.side === 'pro' 
-                    ? 'text-pro-foreground/70' 
-                    : conversation.side === 'con'
-                    ? 'text-con-foreground/70'
-                    : 'text-muted-foreground'
-                }`}>
+
+                <div
+                  className={`flex items-center justify-between text-sm ${
+                    conversation.side === 'pro'
+                      ? 'text-pro-foreground/70'
+                      : conversation.side === 'con'
+                        ? 'text-con-foreground/70'
+                        : 'text-muted-foreground'
+                  }`}
+                >
                   <div className="flex items-center gap-4">
                     <span className="flex items-center gap-1">
                       <MessageCircle className="w-4 h-4" />
@@ -165,7 +173,7 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
                       {formatDate(conversation.last_activity)}
                     </span>
                   </div>
-                  
+
                   <Button variant="secondary" size="sm">
                     Continue Debate
                   </Button>
@@ -179,7 +187,9 @@ export const ConversationsList = ({ onSelectConversation }: ConversationsListPro
           <div className="text-center py-12">
             <MessageCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">No conversations yet</h3>
-            <p className="text-muted-foreground">Start your first debate to get the discussion going!</p>
+            <p className="text-muted-foreground">
+              Start your first debate to get the discussion going!
+            </p>
           </div>
         )}
       </div>
