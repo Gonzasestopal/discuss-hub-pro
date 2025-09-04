@@ -28,6 +28,12 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: Configure git identity (actor noreply)
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
 
       - name: Fetch tags
         run: git fetch --tags --force
@@ -43,9 +49,8 @@ jobs:
         uses: commitizen-tools/commitizen-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          git_email: ${{ env.GIT_USER_EMAIL }}
-          git_name: ${{ env.GIT_USER_NAME }}
-          # Evita fallar si aún no detecta versión, pero deja el output vacío
+          git_name: '${{ github.actor }}'
+          git_email: '${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com'
           no_raise: 21
 
   release:
