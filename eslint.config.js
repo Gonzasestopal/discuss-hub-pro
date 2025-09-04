@@ -145,6 +145,7 @@ export default [
   // 3) Vite config & other Node scripts
   {
     files: [
+      '.commitlintrc.cjs',
       'vite.config.{js,ts}',
       'postcss.config.{js,ts}',
       'scripts/**/*.{js,ts}',
@@ -157,6 +158,7 @@ export default [
     },
     rules: {
       'react-refresh/only-export-components': 'off',
+      'no-undef': 'off',
     },
   },
 
@@ -165,7 +167,7 @@ export default [
     files: ['**/*.{test,spec}.{js,jsx,ts,tsx}'],
     languageOptions: {
       globals: {
-        ...globals.jest, // or ...globals.vitest if you use Vitest
+        ...globals.node, // or ...globals.vitest if you use Vitest
       },
     },
     rules: {
