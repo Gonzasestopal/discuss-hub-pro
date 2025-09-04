@@ -2,7 +2,7 @@ name: Bump version
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
 env:
   GIT_USER_EMAIL: gonzasestopal@gmail.com
