@@ -1,0 +1,35 @@
+name: Storybook Play Tests (CI-min)
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  test-stories:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Run Storybook play tests
+        run: pnpm test:stories
+        env:
+          CI: true
