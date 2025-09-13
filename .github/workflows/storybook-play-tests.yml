@@ -26,12 +26,20 @@ jobs:
       - name: Install deps
         run: pnpm install --frozen-lockfile=false
 
-      - name: Build Storybook
-        run: pnpm run build:sb
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       # If you run tests:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
+
+      - name: Build Storybook
+        run: pnpm run build:sb
 
       - name: Serve Storybook & Test
         run: |
