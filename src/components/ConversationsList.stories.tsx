@@ -1,5 +1,5 @@
 import type { Decorator, Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from '@storybook/test';
+import { expect, within } from 'storybook/test';
 
 import { ConversationsList } from './ConversationsList';
 

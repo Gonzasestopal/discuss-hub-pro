@@ -1,7 +1,7 @@
 // src/pages/NotFound.stories.tsx
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, within } from '@storybook/test';
+import { expect, within } from 'storybook/test';
 
 import NotFound from './NotFound';
 
