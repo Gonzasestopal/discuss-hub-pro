@@ -16,11 +16,11 @@ jobs:
           version: 9.10.0
           run_install: false
 
-      - name: Setup Node (from .nvmrc)
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
+          node-version: .nvmrc
+          cache: pnpm
 
       - name: Show versions
         run: |
