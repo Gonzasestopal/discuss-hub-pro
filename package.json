@@ -5,7 +5,7 @@
   "type": "module",
   "packageManager": "pnpm@9.10.0",
   "engines": {
-    "node": "22.12.x"
+    "node": ">=22.12 <23"
   },
   "volta": {
     "node": "22.12.0",
@@ -23,7 +23,9 @@
     "commit": "cz",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test:stories": "test-storybook"
+    "test:stories": "test-storybook",
+    "build:sb": "build-storybook --quiet",
+    "serve:sb": "http-server ./storybook-static -p 6006 -s"
   },
   "config": {
     "commitizen": {

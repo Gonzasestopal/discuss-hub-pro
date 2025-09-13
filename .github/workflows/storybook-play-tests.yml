@@ -17,11 +17,11 @@ jobs:
           version: 9.10.0
           run_install: false
 
-      - name: Setup Node
+      - name: Setup Node (from .nvmrc)
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: pnpm
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
 
       - name: Install deps
         run: pnpm install --frozen-lockfile=false
@@ -29,7 +29,22 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
 
+      - name: Build Storybook
+        run: pnpm run build:sb
+
+      - name: Serve Storybook (background)
+        run: |
+          npx http-server ./storybook-static -p 6006 -s &
+          echo $! > sb_pid.txt
+
+      - name: Wait for Storybook
+        run: npx wait-on http://127.0.0.1:6006
+
       - name: Run Storybook play tests
         run: pnpm test:stories
         env:
           CI: true
+
+      - name: Stop server
+        if: always()
+        run: kill $(cat sb_pid.txt) || true
