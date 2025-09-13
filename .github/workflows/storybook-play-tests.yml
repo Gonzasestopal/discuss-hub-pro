@@ -41,12 +41,12 @@ jobs:
       - name: Build Storybook
         run: pnpm run build:sb
 
-      - name: Serve Storybook & Test
+      - name: Serve Storybook & run tests
         run: |
-          npx http-server ./storybook-static -p 6006 -s &
+          pnpm run serve:sb &
           echo $! > sb_pid.txt
           npx wait-on http://127.0.0.1:6006
           pnpm run test:stories
-      - if: always()
-        name: Stop server
+      - name: Stop Storybook
+        if: always()
         run: kill $(cat sb_pid.txt) || true
