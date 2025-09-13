@@ -1,9 +1,8 @@
 name: Storybook Play Tests (CI-min)
 
 on:
-  push:
-    branches: ['**']
   pull_request:
+    branches: [main]
 
 jobs:
   test-stories:
@@ -15,12 +14,13 @@ jobs:
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 9.10.0
+          run_install: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: .nvmrc
           cache: pnpm
 
       - name: Install deps
