@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, MessageCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -7,118 +7,123 @@ import { Conversation, ConversationDetailResponse, Message } from '@/types/debat
 
 import { MessageForm } from './MessageForm';
 
+type ApiRole = 'user' | 'bot';
+type Side = 'pro' | 'con';
+
 interface ConversationDetailProps {
   conversation: Conversation;
   onBack: () => void;
 }
 
+const API_BASE = 'https://debate-bot-vh9a.onrender.com';
+
+const opposite = (s: Side): Side => (s === 'pro' ? 'con' : 'pro');
+
+/** Same rule you used in your snippet */
+function computeSideFor(role: ApiRole, convoSide?: Side | null): Side {
+  if (convoSide) return role === 'bot' ? convoSide : opposite(convoSide);
+  return role === 'bot' ? 'pro' : 'con'; // default if no side specified
+}
+
+function transformApiToUi(data: ConversationDetailResponse): {
+  meta: { conversation_id: number; created_at: string; side?: Side | null };
+  messages: Message[];
+} {
+  const messages: Message[] = data.message.map((apiMessage, index) => ({
+    id: index + 1,
+    content: apiMessage.message,
+    side: computeSideFor(apiMessage.role as ApiRole, data.side ?? null),
+    timestamp: data.created_at, // Using conversation created_at for now
+    conversation_id: data.conversation_id,
+  }));
+
+  return {
+    meta: {
+      conversation_id: data.conversation_id,
+      created_at: data.created_at,
+      side: data.side ?? null,
+    },
+    messages,
+  };
+}
+
 export const ConversationDetail = ({ conversation, onBack }: ConversationDetailProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [meta, setMeta] = useState<{
+    conversation_id: number;
+    created_at: string;
+    side?: Side | null;
+  }>();
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+  const fetchMessages = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/conversations/${conversation.id}`);
+      if (!res.ok) throw new Error('Failed to fetch messages');
+      const data: ConversationDetailResponse = await res.json();
+      const { meta, messages } = transformApiToUi(data);
+      setMeta(meta);
+      setMessages(messages);
+    } catch (error) {
+      console.error('Failed to fetch messages:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [conversation.id]);
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await fetch(
-          `https://debate-bot-vh9a.onrender.com/conversations/${conversation.id}`,
-        );
-        if (!response.ok) {
-          throw new Error('Failed to fetch messages');
-        }
-        const data: ConversationDetailResponse = await response.json();
-
-        // Transform API response to UI format
-        const transformedMessages: Message[] = data.message.map((apiMessage, index) => ({
-          id: index + 1,
-          content: apiMessage.message,
-          side: data.side
-            ? apiMessage.role === 'bot'
-              ? data.side
-              : data.side === 'pro'
-                ? 'con'
-                : 'pro'
-            : apiMessage.role === 'bot'
-              ? 'pro'
-              : 'con', // Default if no side specified
-          timestamp: data.created_at, // Using conversation created_at for now
-          conversation_id: data.conversation_id,
-        }));
-
-        setMessages(transformedMessages);
-      } catch (error) {
-        console.error('Failed to fetch messages:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchMessages();
-  }, [conversation.id]);
+  }, [fetchMessages]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const handleNewMessage = async (content: string) => {
-    const payload = {
-      message: content,
-      conversation_id: conversation.id,
+    const trimmed = content.trim();
+    if (!trimmed) return;
+
+    // Optimistic UI message using the SAME mapping rule
+    const optimistic: Message = {
+      id: messages.length + 1,
+      content: trimmed,
+      side: computeSideFor('user', meta?.side ?? null),
+      timestamp: meta?.created_at ?? new Date().toISOString(),
+      conversation_id: meta?.conversation_id ?? Number(conversation.id),
     };
 
+    setMessages((prev) => [...prev, optimistic]);
+
     try {
-      const response = await fetch('https://debate-bot-vh9a.onrender.com/messages', {
+      const response = await fetch(`${API_BASE}/conversations/${conversation.id}/messages`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: trimmed }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
+      if (!response.ok) throw new Error('Failed to send message');
 
-      const data: ConversationDetailResponse = await response.json();
-
-      // Transform API response to UI format
-      const transformedMessages: Message[] = data.message.map((apiMessage, index) => ({
-        id: index + 1,
-        content: apiMessage.message,
-        side: data.side
-          ? apiMessage.role === 'bot'
-            ? data.side
-            : data.side === 'pro'
-              ? 'con'
-              : 'pro'
-          : apiMessage.role === 'bot'
-            ? 'pro'
-            : 'con', // Default if no side specified
-        timestamp: new Date().toISOString(),
-        conversation_id: data.conversation_id,
-      }));
-
-      setMessages(transformedMessages);
+      // If you want to stay perfectly in sync with server (e.g., server adds bot reply),
+      // uncomment the next line to refetch after POST:
+      // await fetchMessages();
     } catch (error) {
       console.error('Failed to send message:', error);
+      // Roll back optimistic message on error
+      setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
     }
   };
 
-  const formatTime = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  const formatTime = (timestamp: string) =>
+    new Date(timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="gradient-primary w-8 h-8 rounded-full animate-pulse"></div>
+        <div className="gradient-primary w-8 h-8 rounded-full animate-pulse" />
       </div>
     );
   }
