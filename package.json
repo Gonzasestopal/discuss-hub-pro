@@ -21,10 +21,11 @@
     "check": "pnpm lint && pnpm format:check",
     "prepare": "is-ci || husky",
     "commit": "cz",
+    "sb:dev": "storybook dev -p 6006",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test:stories": "test-storybook",
-    "build:sb": "build-storybook --quiet",
+    "build:sb": "storybook build",
     "serve:sb": "http-server ./storybook-static -p 6006 -s"
   },
   "config": {

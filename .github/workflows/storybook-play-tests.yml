@@ -26,25 +26,19 @@ jobs:
       - name: Install deps
         run: pnpm install --frozen-lockfile=false
 
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
-
       - name: Build Storybook
         run: pnpm run build:sb
 
-      - name: Serve Storybook (background)
+      # If you run tests:
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Serve Storybook & Test
         run: |
           npx http-server ./storybook-static -p 6006 -s &
           echo $! > sb_pid.txt
-
-      - name: Wait for Storybook
-        run: npx wait-on http://127.0.0.1:6006
-
-      - name: Run Storybook play tests
-        run: pnpm test:stories
-        env:
-          CI: true
-
-      - name: Stop server
-        if: always()
+          npx wait-on http://127.0.0.1:6006
+          pnpm run test:stories
+      - if: always()
+        name: Stop server
         run: kill $(cat sb_pid.txt) || true
