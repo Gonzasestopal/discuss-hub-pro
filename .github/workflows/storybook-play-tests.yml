@@ -1,0 +1,52 @@
+name: Storybook Play Tests (CI-min)
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-stories:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.10.0
+          run_install: false
+
+      - name: Setup Node (from .nvmrc)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      # If you run tests:
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build Storybook
+        run: pnpm run build:sb
+
+      - name: Serve Storybook & run tests
+        run: |
+          pnpm run serve:sb &
+          echo $! > sb_pid.txt
+          npx wait-on http://127.0.0.1:6006
+          pnpm run test:stories
+      - name: Stop Storybook
+        if: always()
+        run: kill $(cat sb_pid.txt) || true

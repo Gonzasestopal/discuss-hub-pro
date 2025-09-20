@@ -1,3 +1,4 @@
+// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 // eslint.config.js
 // Flat config for ESLint v9+
 //
@@ -8,7 +9,6 @@
 // - Simple import sort + unused imports cleanup
 // - Prettier for formatting (ESLint won't fight Prettier)
 // - Targeted overrides for shadcn/ui files and Tailwind config
-
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import a11y from 'eslint-plugin-jsx-a11y';
@@ -16,6 +16,7 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import storybook from 'eslint-plugin-storybook';
 import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -36,13 +37,9 @@ export default [
       // generated API clients, etc:
       'src/generated/**',
     ],
-  },
-
-  // Base JS & TS recommended (fast: not type-aware)
+  }, // Base JS & TS recommended (fast: not type-aware)
   js.configs.recommended,
-  ...tseslint.configs.recommended,
-
-  // Main project rules
+  ...tseslint.configs.recommended, // Main project rules
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
@@ -118,9 +115,7 @@ export default [
       // --- Prettier: turn off formatting-related lint rules ---
       // (prettier config loaded at the end disables stylistic rules)
     },
-  },
-
-  // ---- Overrides ----
+  }, // ---- Overrides ----
 
   // 1) shadcn/ui & other UI component libs:
   // Many components export helpers alongside components; relax Refresh rule.
@@ -132,17 +127,13 @@ export default [
       // or relax the rule here if you prefer:
       // '@typescript-eslint/no-empty-object-type': 'off',
     },
-  },
-
-  // 2) Tailwind config (allow require or CJS bits)
+  }, // 2) Tailwind config (allow require or CJS bits)
   {
     files: ['tailwind.config.{js,cjs,ts}'],
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
     },
-  },
-
-  // 3) Vite config & other Node scripts
+  }, // 3) Vite config & other Node scripts
   {
     files: [
       '.commitlintrc.cjs',
@@ -160,9 +151,7 @@ export default [
       'react-refresh/only-export-components': 'off',
       'no-undef': 'off',
     },
-  },
-
-  // 4) Test files (adjust framework env if you use Vitest/Jest)
+  }, // 4) Test files (adjust framework env if you use Vitest/Jest)
   {
     files: ['**/*.{test,spec}.{js,jsx,ts,tsx}'],
     languageOptions: {
@@ -174,8 +163,7 @@ export default [
       // Tests often need dev-only patterns
       '@typescript-eslint/no-explicit-any': 'off',
     },
-  },
-
-  // Put Prettier LAST to disable conflicting style rules
+  }, // Put Prettier LAST to disable conflicting style rules
   prettier,
+  ...storybook.configs['flat/recommended'],
 ];
